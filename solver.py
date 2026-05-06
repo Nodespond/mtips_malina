@@ -8,8 +8,9 @@ class Solver:
     @staticmethod
     def classify_instance(input_data: Dict[str, str]) -> Tuple[Optional[List[str]], List[dict]]:
         if not input_data:
-            return None, []
+            return None, [], "expert"
 
+        method_used ="expert"
         conn = get_connection()
         cursor = conn.cursor()
 
@@ -91,6 +92,7 @@ class Solver:
         conn.close()
 
         if suitable and len(suitable) > 1:
+            method_used = "ml"
             if is_model_trained():
                 print(f"[Solver] Найдено {len(suitable)} подходящих видов: {suitable}")
                 print(f"[Solver] Применяю ML-модель для выбора лучшего...")
@@ -108,4 +110,4 @@ class Solver:
             else:
                 print(f"[Solver] ML-модель не обучена, возвращаю все {len(suitable)} подходящих видов")
 
-        return (suitable if suitable else None, all_rejections)
+        return (suitable if suitable else None, all_rejections, method_used)

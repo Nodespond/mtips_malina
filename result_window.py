@@ -4,15 +4,20 @@ from db.connection import get_connection
 
 
 class ResultWindow(tk.Toplevel):
-    def __init__(self, parent, suitable, rejections, input_data=None):
+    def __init__(self, parent, suitable, rejections, input_data=None, method='expert'):
         super().__init__(parent)
         self.title("Результат")
         self.geometry("980x720")
-
+        self.method = method
         self.create_widgets(suitable, rejections)
 
     def create_widgets(self, suitable, rejections):
-        tk.Label(self, text="Результат", font=("Arial", 18, "bold")).pack(pady=15)
+        text_tk = "Результат"
+        if self.method == "expert":
+            text_tk+="(Ответ дан экспертной системой)"
+        else:
+            text_tk+="(Ответ дан моделью машинного обучения)"
+        tk.Label(self, text=text_tk, font=("Arial", 18, "bold")).pack(pady=15)
 
         suitable_frame = tk.LabelFrame(self, text="Подходящие виды", padx=20, pady=12)
         suitable_frame.pack(fill=tk.X, padx=25, pady=(0, 10))

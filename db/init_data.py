@@ -1,9 +1,19 @@
 from db.connection import get_connection
 
-
 def insert_initial_data():
+
     conn = get_connection()
     cursor = conn.cursor()
+
+    cursor.execute("SELECT COUNT(*) as count FROM varieties")
+    result = cursor.fetchone()
+
+    if result["count"] > 0:
+        print("Данные уже есть в базе. Заполнение пропущено.")
+        conn.close()
+        return
+
+    print("База данных пуста. Заполняем начальными данными...")
 
     properties = [
         ("масса плода", "real"),
