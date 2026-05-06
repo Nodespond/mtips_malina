@@ -26,7 +26,6 @@ class VarietyValuesWindow:
         tk.Label(self.window, text="Значения свойств для вида",
                  font=("Arial", 14, "bold")).pack(pady=10)
 
-        # Выбор вида
         top = tk.Frame(self.window)
         top.pack(fill=tk.X, padx=20, pady=5)
         tk.Label(top, text="Вид плода малины:").pack(side=tk.LEFT, padx=5)
@@ -34,7 +33,6 @@ class VarietyValuesWindow:
         self.variety_combo.pack(side=tk.LEFT, padx=10, fill=tk.X, expand=True)
         self.variety_combo.bind("<<ComboboxSelected>>", self.on_variety_selected)
 
-        # Выбор свойства
         prop_frame = tk.Frame(self.window)
         prop_frame.pack(fill=tk.X, padx=20, pady=5)
         tk.Label(prop_frame, text="Свойство:").pack(side=tk.LEFT, padx=5)
@@ -42,14 +40,12 @@ class VarietyValuesWindow:
         self.property_combo.pack(side=tk.LEFT, padx=10, fill=tk.X, expand=True)
         self.property_combo.bind("<<ComboboxSelected>>", self.on_property_selected)
 
-        # Область редактирования
         self.edit_area = tk.LabelFrame(self.window, text="Значение свойства", padx=15, pady=15)
         self.edit_area.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
 
         self.dynamic_frame = tk.Frame(self.edit_area)
         self.dynamic_frame.pack(fill=tk.BOTH, expand=True)
 
-        # Кнопка сохранения внизу
         btn_frame = tk.Frame(self.window)
         btn_frame.pack(pady=10)
         tk.Button(btn_frame, text="Сохранить значение", bg="#90ee90",
@@ -99,7 +95,6 @@ class VarietyValuesWindow:
         prop_type = row["type"] if row else "categorical"
 
         if prop_type == "categorical":
-            # Прокручиваемый фрейм
             canvas = tk.Canvas(self.dynamic_frame)
             scrollbar = tk.Scrollbar(self.dynamic_frame, orient="vertical", command=canvas.yview)
             scroll_frame = tk.Frame(canvas)
@@ -129,7 +124,6 @@ class VarietyValuesWindow:
                                   value=val, font=("Arial", 10), anchor="w")
                 rb.pack(anchor="w", pady=2, padx=10)
 
-            # Текущее значение
             cursor.execute("""
                 SELECT categorical_value FROM variety_values 
                 WHERE variety_id = (SELECT id FROM varieties WHERE name = ?)
@@ -216,7 +210,7 @@ class VarietyValuesWindow:
                 """, (variety_id, prop_id, min_v, max_v))
 
             conn.commit()
-            self.on_property_selected(None)  # обновляем текущий вид
+            self.on_property_selected(None)
 
         except:
             pass

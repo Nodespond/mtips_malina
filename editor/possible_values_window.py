@@ -21,7 +21,6 @@ class PossibleValuesWindow:
         tk.Label(self.window, text="Возможные значения свойств",
                  font=("Arial", 14, "bold")).pack(pady=10)
 
-        # Выбор свойства
         top_frame = tk.Frame(self.window)
         top_frame.pack(fill=tk.X, padx=20, pady=8)
 
@@ -30,7 +29,6 @@ class PossibleValuesWindow:
         self.prop_combo.pack(side=tk.LEFT, padx=10)
         self.prop_combo.bind("<<ComboboxSelected>>", self.on_property_selected)
 
-        # Скроллируемая область значений
         container = tk.Frame(self.window)
         container.pack(fill=tk.BOTH, expand=True, padx=20, pady=5)
 
@@ -49,7 +47,6 @@ class PossibleValuesWindow:
         canvas.pack(side="left", fill="both", expand=True)
         scrollbar.pack(side="right", fill="y")
 
-        # Панель добавления
         add_frame = tk.LabelFrame(self.window, text="Добавить / Изменить значение", padx=15, pady=10)
         add_frame.pack(fill=tk.X, padx=20, pady=10)
 
@@ -86,7 +83,6 @@ class PossibleValuesWindow:
 
         self.current_property = prop_name
 
-        # Очистка предыдущих элементов
         for widget in self.scrollable_frame.winfo_children():
             widget.destroy()
 
@@ -124,7 +120,6 @@ class PossibleValuesWindow:
                                  command=lambda rid=row["id"]: self.delete_value(rid))
             delete_btn.pack(side=tk.RIGHT, padx=5)
 
-        # Переключение панели добавления
         if prop_type == "categorical":
             self.cat_frame.pack(fill=tk.X, pady=5)
             self.num_frame.pack_forget()
@@ -153,7 +148,6 @@ class PossibleValuesWindow:
                 if not val:
                     return
 
-                # Проверка на дубликат
                 cursor.execute("""
                     SELECT 1 FROM possible_values 
                     WHERE property_id = ? AND categorical_value = ?
@@ -168,13 +162,12 @@ class PossibleValuesWindow:
                 """, (prop_id, val))
                 self.cat_entry.delete(0, tk.END)
 
-            else:  # numeric
+            else:
                 min_v = float(self.min_entry.get().strip())
                 max_v = float(self.max_entry.get().strip())
                 if min_v > max_v:
                     return
 
-                # Удаляем старый диапазон (чтобы был только один)
                 cursor.execute("DELETE FROM possible_values WHERE property_id = ? AND min_value IS NOT NULL", (prop_id,))
 
                 cursor.execute("""
@@ -186,7 +179,7 @@ class PossibleValuesWindow:
                 self.max_entry.delete(0, tk.END)
 
             conn.commit()
-            self.on_property_selected(None)  # автообновление списка
+            self.on_property_selected(None)
 
         except:
             pass

@@ -19,7 +19,6 @@ class VarietiesWindow:
         tk.Label(self.window, text="Виды плодов малины",
                  font=("Arial", 14, "bold")).pack(pady=10)
 
-        # Контейнер со скроллом
         container = tk.Frame(self.window)
         container.pack(fill=tk.BOTH, expand=True, padx=20, pady=5)
 

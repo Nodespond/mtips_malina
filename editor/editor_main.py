@@ -19,11 +19,9 @@ class EditorMain(tk.Toplevel):
         self.create_widgets()
 
     def create_widgets(self):
-        # Вкладки
         notebook = ttk.Notebook(self)
         notebook.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
 
-        # Создаём фреймы для каждой вкладки
         tab1 = tk.Frame(notebook)
         tab2 = tk.Frame(notebook)
         tab3 = tk.Frame(notebook)
@@ -38,7 +36,6 @@ class EditorMain(tk.Toplevel):
         notebook.add(tab5, text="5. Значения для вида")
         notebook.add(tab6, text="6. Проверка полноты знаний")
 
-        # Вставляем содержимое в каждую вкладку
         VarietiesWindow(tab1, embedded=True)
         PropertiesWindow(tab2, embedded=True)
         PossibleValuesWindow(tab3, embedded=True)
@@ -46,6 +43,5 @@ class EditorMain(tk.Toplevel):
         VarietyValuesWindow(tab5, embedded=True)
         ValidationWindow(tab6, embedded=True)
 
-        # Кнопка закрытия
         tk.Button(self, text="Закрыть редактор",
                   command=self.destroy, font=("Arial", 10)).pack(pady=8)

@@ -20,7 +20,6 @@ class VarietyPropertiesWindow:
         tk.Label(self.window, text="Описание свойств вида",
                  font=("Arial", 14, "bold")).pack(pady=10)
 
-        # Выбор вида
         top_frame = tk.Frame(self.window)
         top_frame.pack(fill=tk.X, padx=20, pady=5)
         tk.Label(top_frame, text="Вид плода малины:").pack(side=tk.LEFT)
@@ -28,7 +27,6 @@ class VarietyPropertiesWindow:
         self.variety_combo.pack(side=tk.LEFT, padx=10, fill=tk.X, expand=True)
         self.variety_combo.bind("<<ComboboxSelected>>", self.on_variety_selected)
 
-        # Основная часть
         frame = tk.Frame(self.window)
         frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
 

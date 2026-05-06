@@ -1,18 +1,12 @@
 from db.connection import get_connection
 from typing import Dict, List, Tuple, Optional
+from ml_model import predict_best, is_model_trained
+
 
 class Solver:
-    """
-    Решатель задач классификации по методу опровержения гипотез.
-    """
 
     @staticmethod
     def classify_instance(input_data: Dict[str, str]) -> Tuple[Optional[List[str]], List[dict]]:
-        """
-        Возвращает:
-            suitable   - список подходящих видов (или None, если ничего не подошло)
-            rejections - список причин опровержения для ВСЕХ видов (даже если есть подходящие)
-        """
         if not input_data:
             return None, []
 
@@ -23,7 +17,7 @@ class Solver:
         all_varieties = cursor.fetchall()
 
         suitable = []
-        all_rejections = []   # собираем причины для ВСЕХ видов
+        all_rejections = []
 
         for var_row in all_varieties:
             variety_id = var_row["id"]
@@ -52,7 +46,7 @@ class Solver:
                         "user_value": user_value,
                         "reason": "свойство отсутствует у данного вида"
                     })
-                    continue  # продолжаем проверять другие свойства для полного отчёта
+                    continue
 
                 prop_type = spec["type"]
 
@@ -66,7 +60,7 @@ class Solver:
                             "expected": expected,
                             "reason": f"введено '{user_value}', ожидалось '{expected}'"
                         })
-                else:  # numeric
+                else:
                     try:
                         user_num = float(user_value)
                         min_v = spec["min_value"]
@@ -95,5 +89,23 @@ class Solver:
                 })
 
         conn.close()
+
+        if suitable and len(suitable) > 1:
+            if is_model_trained():
+                print(f"[Solver] Найдено {len(suitable)} подходящих видов: {suitable}")
+                print(f"[Solver] Применяю ML-модель для выбора лучшего...")
+
+                try:
+                    best_variety = predict_best(input_data, suitable)
+                    if best_variety and best_variety in suitable:
+                        print(f"[Solver] ML-модель выбрала: '{best_variety}'")
+                        suitable = [best_variety]  #оставляем только лучший
+                    else:
+                        print(f"[Solver] ML-модель вернула неожиданный результат, оставляю все подходящие")
+                except Exception as e:
+                    print(f"[Solver] Ошибка при работе ML-модели: {e}")
+                    print(f"[Solver] Оставляю все {len(suitable)} подходящих видов")
+            else:
+                print(f"[Solver] ML-модель не обучена, возвращаю все {len(suitable)} подходящих видов")
 
         return (suitable if suitable else None, all_rejections)

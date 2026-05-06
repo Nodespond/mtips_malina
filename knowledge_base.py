@@ -4,7 +4,6 @@ from db.connection import get_connection
 from models import Property
 
 class KnowledgeBase:
-    """Высокоуровневый интерфейс для работы с базой знаний"""
 
     @staticmethod
     def get_all_varieties() -> list[str]:
@@ -24,7 +23,7 @@ class KnowledgeBase:
             conn.commit()
             return True
         except sqlite3.IntegrityError:
-            return False  # уже существует
+            return False
         finally:
             conn.close()
 

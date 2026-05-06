@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from db.connection import get_connection
 from solver import Solver
-from result_window import ResultWindow, KnowledgeBaseViewer   # если KnowledgeBaseViewer в result_window.py
+from result_window import ResultWindow, KnowledgeBaseViewer
 
 class InputSystemWindow:
     def __init__(self, parent):
@@ -10,7 +10,7 @@ class InputSystemWindow:
         self.window.title("Решатель задач - Классификация вида малины")
         self.window.geometry("1050x720")
 
-        self.input_data = {}      # {property_name: value}
+        self.input_data = {}
         self.property_widgets = {}
 
         self.create_widgets()
@@ -23,7 +23,6 @@ class InputSystemWindow:
         main_frame = tk.Frame(self.window)
         main_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
 
-        # Левая колонка — ввод
         left_frame = tk.LabelFrame(main_frame, text="Характеристики плода", padx=15, pady=10)
         left_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
@@ -42,7 +41,6 @@ class InputSystemWindow:
         canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
-        # Правая колонка — сводка
         right_frame = tk.LabelFrame(main_frame, text="Выбранные характеристики", padx=15, pady=10, width=380)
         right_frame.pack(side=tk.RIGHT, fill=tk.BOTH, padx=(20, 0))
         right_frame.pack_propagate(False)
@@ -54,7 +52,6 @@ class InputSystemWindow:
         self.summary_text.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         summary_scroll.pack(side=tk.RIGHT, fill=tk.Y)
 
-        # Кнопки внизу
         btn_frame = tk.Frame(self.window)
         btn_frame.pack(pady=15)
 
@@ -150,9 +147,4 @@ class InputSystemWindow:
             return
 
         suitable, rejections = Solver.classify_instance(self.input_data)
-        # === ДЛЯ ДИАГНОСТИКИ ===
-        print("=== DEBUG REJECTIONS ===")
-        import pprint
-        pprint.pprint(rejections)
-        # =======================
         ResultWindow(self.window, suitable, rejections, self.input_data)

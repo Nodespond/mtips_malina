@@ -5,7 +5,7 @@ from typing import Union, Optional, Set
 class Property:
     id: int
     name: str
-    type: str  # 'categorical', 'integer', 'real'
+    type: str
 
 @dataclass
 class VarietyValue:

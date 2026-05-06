@@ -2,13 +2,11 @@ from db.connection import get_connection
 
 
 def create_schema():
-    """Создаёт все таблицы (вызывается при инициализации)"""
     conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute("PRAGMA foreign_keys = ON;")
 
-    # Свойства
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS properties (
         id INTEGER PRIMARY KEY,
@@ -17,7 +15,6 @@ def create_schema():
     );
     """)
 
-    # Возможные значения
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS possible_values (
         id INTEGER PRIMARY KEY,
@@ -33,7 +30,6 @@ def create_schema():
     );
     """)
 
-    # Виды
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS varieties (
         id INTEGER PRIMARY KEY,
@@ -41,7 +37,6 @@ def create_schema():
     );
     """)
 
-    # Связь видов и свойств
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS variety_properties (
         variety_id INTEGER NOT NULL,
@@ -52,7 +47,6 @@ def create_schema():
     );
     """)
 
-    # Значения для видов
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS variety_values (
         variety_id INTEGER NOT NULL,

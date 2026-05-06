@@ -14,7 +14,6 @@ class ResultWindow(tk.Toplevel):
     def create_widgets(self, suitable, rejections):
         tk.Label(self, text="Результат", font=("Arial", 18, "bold")).pack(pady=15)
 
-        # Блок 1: Подходящие виды
         suitable_frame = tk.LabelFrame(self, text="Подходящие виды", padx=20, pady=12)
         suitable_frame.pack(fill=tk.X, padx=25, pady=(0, 10))
 
@@ -26,7 +25,6 @@ class ResultWindow(tk.Toplevel):
             tk.Label(suitable_frame, text="Вид не определен. Подходящих не найдено.",
                      font=("Arial", 11), fg="#c62828").pack(anchor="w", pady=5)
 
-        # Блок 2: Объяснение
         rej_frame = tk.LabelFrame(self, text="Объяснение опровержений", padx=20, pady=12)
         rej_frame.pack(fill=tk.BOTH, expand=True, padx=25, pady=10)
 
@@ -57,26 +55,21 @@ class ResultWindow(tk.Toplevel):
                 prop = reason.get('property', '')
                 user_value = reason.get('user_value', reason.get('value', ''))
 
-                # Основной текст
                 text += f"так как значение «{user_value}» свойства «{prop}» "
                 text += f"не соответствует описанию вида."
 
-                # Извлекаем допустимое значение
                 expected = reason.get('expected')
                 if expected:
                     text += f" (допустимо «{expected}»)"
                 else:
-                    # Для числовых свойств парсим строку reason
                     reason_str = reason.get('reason', '')
                     if 'ожидался диапазон' in reason_str or 'ожидается' in reason_str:
-                        # Пытаемся вытащить диапазон из строки
                         import re
                         match = re.search(r'\[.*?\]', reason_str)
                         if match:
                             allowed = match.group(0)
                             text += f" (допустимо {allowed})"
                         else:
-                            # Если диапазон не найден — берём всю оставшуюся часть
                             if 'ожидался диапазон' in reason_str:
                                 allowed_part = reason_str.split('ожидался диапазон')[-1].strip()
                                 text += f" (допустимо {allowed_part})"
@@ -92,7 +85,6 @@ class ResultWindow(tk.Toplevel):
         return text
 
 
-# Окно просмотра базы знаний (без изменений)
 class KnowledgeBaseViewer(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)

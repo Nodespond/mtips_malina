@@ -5,7 +5,6 @@ def insert_initial_data():
     conn = get_connection()
     cursor = conn.cursor()
 
-    # 1. Свойства
     properties = [
         ("масса плода", "real"),
         ("длина плода", "integer"),
@@ -17,36 +16,34 @@ def insert_initial_data():
 
     cursor.executemany("INSERT OR IGNORE INTO properties (name, type) VALUES (?, ?)", properties)
 
-    # Получаем id свойств
     prop_map = {}
     for name, _ in properties:
         cursor.execute("SELECT id FROM properties WHERE name = ?", (name,))
         prop_map[name] = cursor.fetchone()["id"]
 
-    # 2. Возможные значения свойств
     possible_values = [
-        # масса плода
+
         (prop_map["масса плода"], None, 2.0, 12.0),
-        # длина плода
+
         (prop_map["длина плода"], None, 15, 40),
-        # форма плода
+
         (prop_map["форма плода"], "Округлая", None, None),
         (prop_map["форма плода"], "Коническая", None, None),
         (prop_map["форма плода"], "Удлинённо-коническая", None, None),
         (prop_map["форма плода"], "Тупоконическая", None, None),
         (prop_map["форма плода"], "Шаровидная", None, None),
         (prop_map["форма плода"], "Сдвоенная", None, None),
-        # цвет плода
+
         (prop_map["цвет плода"], "Красный", None, None),
         (prop_map["цвет плода"], "Желтый", None, None),
         (prop_map["цвет плода"], "Оранжевый", None, None),
         (prop_map["цвет плода"], "Черный", None, None),
-        # характер окраса
+
         (prop_map["характер окраса плода"], "Глянцевый", None, None),
         (prop_map["характер окраса плода"], "Матовый", None, None),
         (prop_map["характер окраса плода"], "Восковой налет", None, None),
         (prop_map["характер окраса плода"], "Лёгкое опушение", None, None),
-        # сахарокислотный индекс
+
         (prop_map["сахарокислотный индекс"], None, 7.0, 16.0),
     ]
 
@@ -55,7 +52,7 @@ def insert_initial_data():
         possible_values
     )
 
-    # 3. Виды плодов малины (20 штук)
+
     varieties = [
         "Новость Кузьмина", "Малаховка", "Глен Ампл", "Октавия", "Туламин",
         "Полька", "Херитейдж", "Желтый Гигант", "Оранжевое Чудо", "Абрикосовая",
@@ -64,13 +61,13 @@ def insert_initial_data():
     ]
     cursor.executemany("INSERT OR IGNORE INTO varieties (name) VALUES (?)", [(v,) for v in varieties])
 
-    # Получаем id видов
+
     variety_map = {}
     for v in varieties:
         cursor.execute("SELECT id FROM varieties WHERE name = ?", (v,))
         variety_map[v] = cursor.fetchone()["id"]
 
-    # 4. Связь свойств с видами (у всех видов — все 6 свойств)
+
     for var_name in varieties:
         var_id = variety_map[var_name]
         for prop_name in prop_map:
@@ -80,7 +77,6 @@ def insert_initial_data():
                 (var_id, prop_id)
             )
 
-    # 5. Конкретные значения для каждого вида (точно по твоему документу)
     variety_value_data = [
         # Новость Кузьмина
         ("Новость Кузьмина", "масса плода", None, 2.0, 2.5),

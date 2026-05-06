@@ -37,7 +37,6 @@ class PropertiesWindow:
         canvas.pack(side="left", fill="both", expand=True)
         scrollbar.pack(side="right", fill="y")
 
-        # Панель добавления
         add_frame = tk.Frame(self.window)
         add_frame.pack(fill=tk.X, padx=20, pady=10)
 

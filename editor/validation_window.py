@@ -17,13 +17,11 @@ class ValidationWindow:
         tk.Label(self.window, text="Проверка полноты базы знаний",
                  font=("Arial", 14, "bold")).pack(pady=20)
 
-        # Кнопка проверки
         self.check_button = tk.Button(self.window, text="Проверить полноту знаний",
                                     font=("Arial", 11, "bold"), bg="#4CAF50", fg="white",
                                     height=2, width=30, command=self.run_check)
         self.check_button.pack(pady=20)
 
-        # Область результата (скрыта до первой проверки)
         self.result_frame = tk.Frame(self.window)
         self.result_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
 
@@ -35,11 +33,10 @@ class ValidationWindow:
         self.result_text.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
-        # Изначально результат скрыт
         self.result_frame.pack_forget()
 
     def run_check(self):
-        self.result_frame.pack(fill=tk.BOTH, expand=True)  # показываем область результата
+        self.result_frame.pack(fill=tk.BOTH, expand=True)
         self.result_text.config(state="normal")
         self.result_text.delete(1.0, tk.END)
 
@@ -48,7 +45,6 @@ class ValidationWindow:
 
         report = ["Результат проверки:\n\n"]
 
-        # 1. Проверка незаданных значений
         cursor.execute("""
             SELECT v.name as variety_name, p.name as prop_name
             FROM variety_properties vp
