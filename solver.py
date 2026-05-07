@@ -91,6 +91,8 @@ class Solver:
 
         conn.close()
 
+        ml_rejected = []
+
         if suitable and len(suitable) > 1:
             method_used = "ml"
             if is_model_trained():
@@ -100,6 +102,7 @@ class Solver:
                 try:
                     best_variety = predict_best(input_data, suitable)
                     if best_variety and best_variety in suitable:
+                        ml_rejected = [v for v in suitable if v != best_variety]
                         print(f"[Solver] ML-модель выбрала: '{best_variety}'")
                         suitable = [best_variety]  #оставляем только лучший
                     else:
@@ -110,4 +113,4 @@ class Solver:
             else:
                 print(f"[Solver] ML-модель не обучена, возвращаю все {len(suitable)} подходящих видов")
 
-        return (suitable if suitable else None, all_rejections, method_used)
+        return (suitable if suitable else None, all_rejections, method_used, ml_rejected)

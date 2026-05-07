@@ -1,11 +1,12 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox
 from db.connection import get_connection
 from knowledge_base import KnowledgeBase
 
 class VarietyValuesWindow:
-    def __init__(self, parent, embedded=False):
+    def __init__(self, parent, embedded=False, editor=None):
         self.embedded = embedded
+        self.editor = editor
         if embedded:
             self.window = parent
         else:
@@ -20,6 +21,9 @@ class VarietyValuesWindow:
         self.max_entry = None
 
         self.create_widgets()
+        self.load_varieties()
+
+    def refresh_data(self):
         self.load_varieties()
 
     def create_widgets(self):
@@ -189,6 +193,7 @@ class VarietyValuesWindow:
             if prop_type == "categorical":
                 value = self.var_value.get() if self.var_value else None
                 if not value:
+                    messagebox.showwarning("Ошибка", "Выберите категориальное значение")
                     return
                 cursor.execute("""
                     INSERT OR REPLACE INTO variety_values 
@@ -198,21 +203,42 @@ class VarietyValuesWindow:
             else:
                 if not self.min_entry or not self.max_entry:
                     return
-                min_v = float(self.min_entry.get().strip())
-                max_v = float(self.max_entry.get().strip())
+
+                min_str = self.min_entry.get().strip()
+                max_str = self.max_entry.get().strip()
+
+                if not min_str or not max_str:
+                    messagebox.showwarning("Ошибка", "Введите оба значения диапазона")
+                    return
+
+                try:
+                    if prop_type == "integer":
+                        min_v = int(min_str)
+                        max_v = int(max_str)
+                    else:  # real
+                        min_v = float(min_str)
+                        max_v = float(max_str)
+                except ValueError:
+                    if prop_type == "integer":
+                        messagebox.showwarning("Ошибка", "Введите целые числа")
+                    else:
+                        messagebox.showwarning("Ошибка", "Введите числа (можно дробные)")
+                    return
+
                 if min_v > max_v:
+                    messagebox.showwarning("Ошибка", "Минимум не может быть больше максимума")
                     return
 
                 cursor.execute("""
-                    INSERT OR REPLACE INTO variety_values 
-                    (variety_id, property_id, categorical_value, min_value, max_value)
-                    VALUES (?, ?, NULL, ?, ?)
-                """, (variety_id, prop_id, min_v, max_v))
+                                    INSERT OR REPLACE INTO variety_values
+                                    (variety_id, property_id, categorical_value, min_value, max_value)
+                                    VALUES (?, ?, NULL, ?, ?)
+                                """, (variety_id, prop_id, min_v, max_v))
 
             conn.commit()
             self.on_property_selected(None)
 
-        except:
-            pass
+        except Exception as e:
+            messagebox.showerror("Ошибка", f"Не удалось сохранить значение: {e}")
         finally:
             conn.close()

@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox
 from knowledge_base import KnowledgeBase
 
 class PropertiesWindow:
@@ -74,11 +74,21 @@ class PropertiesWindow:
         prop_type = self.type_var.get()
 
         if not name:
+            messagebox.showwarning("Ошибка", "Название свойства не может быть пустым")
+            return
+
+        if not name.replace(" ", "").replace("-", "").replace("_", "").isalnum():
+            messagebox.showwarning("Ошибка", "Название содержит недопустимые символы")
+            return
+
+        if not name:
             return
 
         if KnowledgeBase.add_property(name, prop_type):
             self.name_entry.delete(0, tk.END)
             self.load_properties()
+        else:
+            messagebox.showwarning("Ошибка", f"Свойство '{name}' уже существует")
 
     def delete_property(self, name):
         if KnowledgeBase.delete_property(name):

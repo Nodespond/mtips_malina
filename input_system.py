@@ -146,5 +146,5 @@ class InputSystemWindow:
             messagebox.showwarning("Внимание", "Задайте хотя бы одну характеристику")
             return
 
-        suitable, rejections, method = Solver.classify_instance(self.input_data)
-        ResultWindow(self.window, suitable, rejections, self.input_data, method)
+        suitable, rejections, method, ml_rejected = Solver.classify_instance(self.input_data)
+        ResultWindow(self.window, suitable, rejections, self.input_data, method, ml_rejected)

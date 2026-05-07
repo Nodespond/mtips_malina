@@ -4,8 +4,9 @@ from knowledge_base import KnowledgeBase
 from db.connection import get_connection
 
 class VarietyPropertiesWindow:
-    def __init__(self, parent, embedded=False):
+    def __init__(self, parent, embedded=False, editor=None):
         self.embedded = embedded
+        self.editor = editor
         if embedded:
             self.window = parent
         else:
@@ -14,6 +15,9 @@ class VarietyPropertiesWindow:
             self.window.geometry("750x550")
 
         self.create_widgets()
+        self.load_data()
+
+    def refresh_data(self):
         self.load_data()
 
     def create_widgets(self):

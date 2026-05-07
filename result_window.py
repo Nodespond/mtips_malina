@@ -4,11 +4,12 @@ from db.connection import get_connection
 
 
 class ResultWindow(tk.Toplevel):
-    def __init__(self, parent, suitable, rejections, input_data=None, method='expert'):
+    def __init__(self, parent, suitable, rejections, input_data=None, method='expert', ml_rejected=None):
         super().__init__(parent)
         self.title("Результат")
         self.geometry("980x720")
         self.method = method
+        self.ml_rejected = ml_rejected or []
         self.create_widgets(suitable, rejections)
 
     def create_widgets(self, suitable, rejections):
@@ -51,6 +52,12 @@ class ResultWindow(tk.Toplevel):
             text += "Другие виды опровергнуты по следующим причинам:\n\n"
         else:
             text += "Все виды опровергнуты по следующим причинам:\n\n"
+
+        if self.ml_rejected and suitable:
+            selected = suitable[0]
+            for variety in self.ml_rejected:
+                text += f"Вид «{variety}» опровергнут моделью машинного обучения, "
+                text += f"так как вероятность для данного вида ниже вероятности «{selected}».\n\n"
 
         for rej in rejections:
             variety = rej.get('variety', 'Неизвестный вид')

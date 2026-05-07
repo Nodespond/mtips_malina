@@ -3,8 +3,9 @@ from knowledge_base import KnowledgeBase
 
 
 class VarietiesWindow:
-    def __init__(self, parent, embedded=False):
+    def __init__(self, parent, embedded=False, editor=None):
         self.embedded = embedded
+        self.editor = editor
         if embedded:
             self.window = parent
         else:
@@ -13,6 +14,9 @@ class VarietiesWindow:
             self.window.geometry("600x500")
 
         self.create_widgets()
+        self.load_varieties()
+
+    def refresh_data(self):
         self.load_varieties()
 
     def create_widgets(self):
@@ -72,8 +76,12 @@ class VarietiesWindow:
 
         if KnowledgeBase.add_variety(name):
             self.new_var_entry.delete(0, tk.END)
-            self.load_varieties()  # автообновление
+            self.load_varieties()
+            if self.editor:
+                self.editor.refresh_all_windows()
 
     def delete_variety(self, name):
         if KnowledgeBase.delete_variety(name):
-            self.load_varieties()  # автообновление
+            self.load_varieties()
+            if self.editor:
+                self.editor.refresh_all_windows()

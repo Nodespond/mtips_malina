@@ -1,3 +1,4 @@
+# editor/editor_main.py
 import tkinter as tk
 from tkinter import ttk
 
@@ -16,7 +17,18 @@ class EditorMain(tk.Toplevel):
         self.geometry("900x650")
         self.parent = parent
 
+        self.editor_windows = []
+
         self.create_widgets()
+
+    def register_window(self, window):
+        if window not in self.editor_windows:
+            self.editor_windows.append(window)
+
+    def refresh_all_windows(self):
+        for window in self.editor_windows:
+            if hasattr(window, 'refresh_data'):
+                window.refresh_data()
 
     def create_widgets(self):
         notebook = ttk.Notebook(self)
@@ -36,11 +48,20 @@ class EditorMain(tk.Toplevel):
         notebook.add(tab5, text="5. Значения для вида")
         notebook.add(tab6, text="6. Проверка полноты знаний")
 
-        VarietiesWindow(tab1, embedded=True)
+        varieties_win = VarietiesWindow(tab1, embedded=True, editor=self)
+        self.register_window(varieties_win)
+
         PropertiesWindow(tab2, embedded=True)
-        PossibleValuesWindow(tab3, embedded=True)
-        VarietyPropertiesWindow(tab4, embedded=True)
-        VarietyValuesWindow(tab5, embedded=True)
+
+        possible_values_win = PossibleValuesWindow(tab3, embedded=True, editor=self)
+        self.register_window(possible_values_win)
+
+        variety_props_win = VarietyPropertiesWindow(tab4, embedded=True, editor=self)
+        self.register_window(variety_props_win)
+
+        variety_values_win = VarietyValuesWindow(tab5, embedded=True, editor=self)
+        self.register_window(variety_values_win)
+
         ValidationWindow(tab6, embedded=True)
 
         tk.Button(self, text="Закрыть редактор",

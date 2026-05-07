@@ -1,11 +1,12 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox
 from knowledge_base import KnowledgeBase
 from db.connection import get_connection
 
 class PossibleValuesWindow:
-    def __init__(self, parent, embedded=False):
+    def __init__(self, parent, embedded=False, editor=None):
         self.embedded = embedded
+        self.editor = editor
         if embedded:
             self.window = parent
         else:
@@ -15,6 +16,9 @@ class PossibleValuesWindow:
 
         self.current_property = None
         self.create_widgets()
+        self.load_properties()
+
+    def refresh_data(self):
         self.load_properties()
 
     def create_widgets(self):
@@ -146,6 +150,7 @@ class PossibleValuesWindow:
             if prop_type == "categorical":
                 val = self.cat_entry.get().strip()
                 if not val:
+                    messagebox.showwarning("Ошибка", "Значение не может быть пустым")
                     return
 
                 cursor.execute("""
@@ -154,7 +159,8 @@ class PossibleValuesWindow:
                 """, (prop_id, val))
                 if cursor.fetchone():
                     self.cat_entry.delete(0, tk.END)
-                    return  # уже существует — ничего не делаем
+                    messagebox.showwarning("Ошибка", f"Значение '{val}' уже существует")
+                    return
 
                 cursor.execute("""
                     INSERT OR IGNORE INTO possible_values (property_id, categorical_value)
@@ -163,12 +169,33 @@ class PossibleValuesWindow:
                 self.cat_entry.delete(0, tk.END)
 
             else:
-                min_v = float(self.min_entry.get().strip())
-                max_v = float(self.max_entry.get().strip())
-                if min_v > max_v:
+                min_str = self.min_entry.get().strip()
+                max_str = self.max_entry.get().strip()
+
+                if not min_str or not max_str:
+                    messagebox.showwarning("Ошибка", "Оба поля должны быть заполнены")
                     return
 
-                cursor.execute("DELETE FROM possible_values WHERE property_id = ? AND min_value IS NOT NULL", (prop_id,))
+                try:
+                    if prop_type == "integer":
+                        min_v = int(min_str)
+                        max_v = int(max_str)
+                    else:
+                        min_v = float(min_str)
+                        max_v = float(max_str)
+                except ValueError:
+                    if prop_type == "integer":
+                        messagebox.showwarning("Ошибка", "Введите целые числа")
+                    else:
+                        messagebox.showwarning("Ошибка", "Введите числа (можно дробные)")
+                    return
+
+                if min_v > max_v:
+                    messagebox.showwarning("Ошибка", "Минимум не может быть больше максимума")
+                    return
+
+                cursor.execute("DELETE FROM possible_values WHERE property_id = ? AND min_value IS NOT NULL",
+                               (prop_id,))
 
                 cursor.execute("""
                     INSERT INTO possible_values (property_id, min_value, max_value)
@@ -181,8 +208,8 @@ class PossibleValuesWindow:
             conn.commit()
             self.on_property_selected(None)
 
-        except:
-            pass
+        except Exception as e:
+            messagebox.showerror("Ошибка", f"Не удалось добавить значение: {e}")
         finally:
             conn.close()
 
